@@ -50,24 +50,12 @@ uint32_t readStrUART(char *buf, uint32_t size){
 
     if (c == '\r' || c == '\n')
     {
-      writeStrUART("\r\n");
       break;
-    }
-
-    if (c == '\b' || c == 0x7F)
-    {
-      if (i > 0)
-      {
-        i--;
-        writeStrUART("\b \b");
-      }
-      continue;
     }
 
     if (i + 1 < size)
     {
       buf[i++] = c;
-      writeUART(c);
     }
   }
 
