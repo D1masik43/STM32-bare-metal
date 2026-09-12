@@ -41,16 +41,30 @@ void writeStrUART(const char *s){
   }
 }
 
-uint32_t readStrUART(char *buf, uint32_t size){
-  uint32_t i = 0;
+// Polls on its own: drains whatever has arrived and returns 1 only once a
+// full line is in buf. Returns 0 straight away while the line is still being
+// typed, so the caller's loop keeps running.
+int readStrUART(char *buf, uint32_t size){
+  static uint32_t i = 0;
 
-  while(1)
+  // a latched overrun stops RXNE coming back, so clear it first
+  if (*USART3_ISR & (1 << USART3_ISR_ORE))
   {
-    char c = readUART();
+    *USART3_ICR = (1 << USART3_ICR_ORECF);
+  }
+
+  while (*USART3_ISR & (1 << USART3_ISR_RXNE))
+  {
+    char c = (char)(*USART3_RDR & 0xFF);
 
     if (c == '\r' || c == '\n')
     {
-      break;
+      if (size > 0)
+      {
+        buf[i] = '\0';
+      }
+      i = 0;
+      return 1;
     }
 
     if (i + 1 < size)
@@ -59,10 +73,33 @@ uint32_t readStrUART(char *buf, uint32_t size){
     }
   }
 
-  if (size > 0)
+  return 0;
+}
+
+// Decimal number -> string. buf needs room for 11 chars (10 digits + '\0').
+void decToStr(uint32_t v, char *buf){
+  char tmp[10];
+  uint32_t n = 0;
+  uint32_t i = 0;
+
+  if (v == 0)
   {
-    buf[i] = '\0';
+    buf[0] = '0';
+    buf[1] = '\0';
+    return;
   }
 
-  return i;
+  // %10 gives the lowest digit first, so collect then reverse
+  while (v > 0)
+  {
+    tmp[n++] = (char)('0' + (v % 10));
+    v /= 10;
+  }
+
+  while (n > 0)
+  {
+    buf[i++] = tmp[--n];
+  }
+
+  buf[i] = '\0';
 }

@@ -2,39 +2,13 @@
 #define UART_H
 
 #include <stdint.h>
-
-#define PERIPHERAL_BASE (0x40000000U)
-#define AHB1_BASE (PERIPHERAL_BASE + 0x20000U)
-#define GPIOB_BASE (AHB1_BASE + 0x400U)
-#define RCC_BASE (AHB1_BASE + 0x3800U)
-
-#define RCC_AHB1ENR_OFFSET (0x30U)
-#define RCC_AHB1ENR ((volatile uint32_t*) (RCC_BASE + RCC_AHB1ENR_OFFSET))
-#define RCC_AHB1ENR_GPIOAEN (0x00U)
-
-#define GPIO_MODER_OFFSET (0x00U) 
-#define GPIOB_MODER ((volatile uint32_t*) (GPIOB_BASE + GPIO_MODER_OFFSET))
-#define GPIO_MODER_MODER5 (14U)
-#define GPIO_ODR_OFFSET (0x14U)
-#define GPIOB_ODR ((volatile uint32_t*) (GPIOB_BASE + GPIO_ODR_OFFSET))
-
-#define LED_PIN 7
-
+#include "mcu.h"
 
 // UART:
-#define GPIO_D_BASE (AHB1_BASE + 0x0C00U)
 #define USART3_BASE (0x40004800U)
 
-#define RCC_AHB1ENR_GPIODEN (3U)
-
-#define RCC_APB1ENR_OFFSET (0x40U)
-#define RCC_APB1ENR ((volatile uint32_t*) (RCC_BASE + RCC_APB1ENR_OFFSET))
-#define RCC_APB1ENR_USART3EN (18U)
-
-#define GPIOD_MODER_OFFSET (0x00U)
-#define GPIOD_MODER ((volatile uint32_t*) (GPIO_D_BASE + GPIOD_MODER_OFFSET))
-#define GPIOD_AFRH_OFFSET (0x24U)
-#define GPIOD_AFRH ((volatile uint32_t*) (GPIO_D_BASE + GPIOD_AFRH_OFFSET))
+#define GPIOD_MODER GPIO_MODER(GPIOD_BASE)
+#define GPIOD_AFRH  GPIO_AFRH(GPIOD_BASE)
 
 #define GPIO_MODER_MODER8 (16U)
 #define GPIO_MODER_MODER9 (18U)
@@ -70,6 +44,7 @@ void initUART(void);
 void writeUART(char c);
 char readUART(void);
 void writeStrUART(const char *s);
-uint32_t readStrUART(char *buf, uint32_t size);
+int  readStrUART(char *buf, uint32_t size);   // 1 = line ready, 0 = not yet
+void decToStr(uint32_t v, char *buf);         // buf must hold 11 chars
 
 #endif
