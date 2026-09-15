@@ -124,18 +124,18 @@ void main(void)
     writeStrUART("\r\n  (1=busy 2=NACK 3=stall 4=noSTOP)\r\n");
   }
 
-  writeStrUART("> ");
-
+  // Lab 1 exchange model: read a packet terminated by \r and answer
+  // ACK:<message>\n. Nothing else goes out once the banner is done, so the
+  // host's read_until('\n') sees the acknowledgement and nothing else.
   while(1)
   {
     if (readStrUART(line, sizeof(line)))
     {
       *GPIOB_ODR ^= (1 << LED_PIN);
 
-      writeStrUART("you typed: ");
+      writeStrUART("ACK:");
       writeStrUART(line);
-      writeStrUART("\r\n");
-      writeStrUART("> ");
+      writeUART('\n');
     }
 
   }

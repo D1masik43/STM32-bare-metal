@@ -37,8 +37,9 @@
 #define USART3_ISR_TXE (7U)
 #define USART3_ICR_ORECF (3U)
 
-// PCLK1 = 16 MHz (HSI, prescalers /1) -> BRR = 16000000 / 115200
-#define USART3_BRR_115200 (139U)
+// PCLK1 = 16 MHz (HSI, prescalers /1) -> BRR = 16000000 / 38400 = 416.67 -> 417
+// (OVER8 = 0, so BRR holds the whole divider; 417 gives 38369 baud, -0.08 %)
+#define USART3_BRR_38400 (417U)
 
 void initUART(void);
 void writeUART(char c);

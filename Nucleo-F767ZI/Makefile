@@ -1,5 +1,5 @@
 STLINK_VID_PID := 0483:374b
-BAUD := 115200
+BAUD := 38400
 
 build:
 	arm-none-eabi-gcc main.c startup.c lib/uart.c lib/i2c.c lib/ssd1306.c -T linker_script.ld -o blink.elf -mcpu=cortex-m7 -mthumb -nostdlib
